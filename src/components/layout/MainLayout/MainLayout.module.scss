@@ -1,0 +1,41 @@
+@import '../../../styles/settings.scss';
+
+.root {
+  height: 92vh;
+  width: 1000px;
+  margin: 4vh auto;
+  padding: $base-size;
+  z-index: 2;
+  box-shadow: 12px 12px 40px rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.container {
+  overflow: auto;
+  height: 87%;
+}
+
+.title {
+  font-family: $font-title;
+}
+
+.line {
+  width: 100%;
+  margin: 2*$base-size auto;
+  height: 0.5*$base-size;
+  border-radius: 5px;
+  background-color: $color-text;
+}
+
+.topbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.menu {
+  align-self: center;
+}
