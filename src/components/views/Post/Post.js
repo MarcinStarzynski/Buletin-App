@@ -15,98 +15,98 @@ import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 
 import { connect } from 'react-redux';
-import { getAll, getOne } from '../../../redux/postsRedux';
+import { fetchPost, getPost } from '../../../redux/postsRedux';
 // import { reduxSelector, reduxActionCreator } from '../../../redux/exampleRedux.js';
 
 import styles from './Post.module.scss';
 
-const Component = ({className, postsByID, props}) => {
+class Component extends React.Component {
 
-  return(
-    <StatusContext.Consumer>
-      { value => (
-        <div className={clsx(className, styles.root)}>
-          <h2>Post: {postsByID.title}</h2>
-          <Grid container spacing={3} className={styles.postContainer}>
-            <Grid item xs={12} sm={5} className={styles.postItem}>
-              <div className={styles.postItem__imageBox}>
-                <img src={postsByID.image} alt={postsByID.title} className={styles.postImage}/>
-              </div>
-            </Grid>
-            <Grid item xs={12} sm={7} className={styles.postItem}>
-              <Card>
-                <CardContent>
-                  {value.status
-                    ?
-                    <div className={styles.postItem__link}>
-                      <Link to={`/post/${postsByID.id}/edit`} className={styles.link}>Edit post</Link>
+  componentDidMount() {
+    const { fetchOnePost } = this.props;
+    console.log('hehe');
+    fetchOnePost();
+    console.log(this.props);
+  }
+
+  render() {
+    const {className, post} = this.props;
+    console.log(post, this.props);
+
+    return(
+      <StatusContext.Consumer>
+        { value => (
+          <div className={clsx(className, styles.root)}>
+            <h2>Post: {post.title}</h2>
+            <Grid container spacing={3} className={styles.postContainer}>
+              <Grid item xs={12} sm={5} className={styles.postItem}>
+                <div className={styles.postItem__imageBox}>
+                  <img src={post.image} alt={post.title} className={styles.postImage}/>
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={7} className={styles.postItem}>
+                <Card>
+                  <CardContent>
+                    {value.status
+                      ?
+                      <div className={styles.postItem__link}>
+                        <Link to={`/posts/${post._id}/edit`} className={styles.link}>Edit post</Link>
+                      </div>
+                      :
+                      null
+                    }
+                    <div className={styles.postItem__group}>
+                      <Typography color="textSecondary" variant="body2">
+                        Status: {post.status}
+                      </Typography>
+                      <Typography variant="h5">
+                        {post.price}
+                      </Typography>
                     </div>
-                    :
-                    null
-                  }
-                  <div className={styles.postItem__group}>
-                    <Typography color="textSecondary" variant="body2">
-                      Status: {postsByID.status}
+                    <Typography variant="subtitle1" className={styles.postItem__content}>
+                      {post.content}
                     </Typography>
-                    <Typography variant="h5">
-                      {postsByID.price}
+                    <Typography variant="subtitle1" className={styles.postItem__content}>
+                      Contact
+                      <div>
+                        <FontAwesomeIcon icon={faAt} className={styles.icon}/> {post.email}<br/>
+                        <FontAwesomeIcon icon={faPhoneAlt} className={styles.icon}/> {post.phone}<br/>
+                        <FontAwesomeIcon icon={faMapMarkedAlt} className={styles.icon}/> {post.location}
+                      </div>
                     </Typography>
-                  </div>
-                  <Typography variant="subtitle1" className={styles.postItem__content}>
-                    {postsByID.content}
-                  </Typography>
-                  <Typography variant="subtitle1" className={styles.postItem__content}>
-                    Contact
-                    <div>
-                      <FontAwesomeIcon icon={faAt} className={styles.icon}/> {postsByID.email}<br/>
-                      <FontAwesomeIcon icon={faPhoneAlt} className={styles.icon}/> {postsByID.phone}<br/>
-                      <FontAwesomeIcon icon={faMapMarkedAlt} className={styles.icon}/> {postsByID.location}
-                    </div>
-                  </Typography>
-                  <Typography color="textSecondary" variant="body2" className={styles.postItem__content}>
-                    <span>Publication: {postsByID.datePublication}</span>
-                    <span>Updated: {postsByID.dateLastUpdate}</span>
-                  </Typography>
-                </CardContent>
-              </Card>
+                    <Typography color="textSecondary" variant="body2" className={styles.postItem__content}>
+                      <span>Publication: {post.datePublication}</span>
+                      <span>Updated: {post.dateLastUpdate}</span>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-          </Grid>
-        </div>
-      )}
-    </StatusContext.Consumer>
-  );
-};
+          </div>
+        )}
+      </StatusContext.Consumer>
+    );
+  }
+}
 
 Component.propTypes = {
   className: PropTypes.string,
   match: PropTypes.object,
   props: PropTypes.object,
   params: PropTypes.object,
-  postsByID: PropTypes.shape({
-    id: PropTypes.string,
-    title: PropTypes.string,
-    content: PropTypes.string,
-    datePublication: PropTypes.string,
-    dateLastUpdate: PropTypes.string,
-    email: PropTypes.string,
-    status: PropTypes.string,
-    image: PropTypes.string,
-    price: PropTypes.string,
-    phone: PropTypes.string,
-    location: PropTypes.string,
-  }),
+  post: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  fetchOnePost: PropTypes.func,
 };
 
-const mapStateToProps = (state, props) => ({
-  postsAll: getAll(state),
-  postsByID: getOne(state, props.match.params.id),
+const mapStateToProps = (state) => ({
+  post: getPost(state),
 });
 
-// const mapDispatchToProps = dispatch => ({
-//   someAction: arg => dispatch(reduxActionCreator(arg)),
-// });
+const mapDispatchToProps =( dispatch, props) => ({
+  fetchOnePost: () => dispatch(fetchPost(props.match.params.id)),
+});
 
-const Container = connect(mapStateToProps)(Component);
+const Container = connect(mapStateToProps, mapDispatchToProps)(Component);
 
 export {
   //Component as Post,

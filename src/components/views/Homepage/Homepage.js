@@ -16,54 +16,64 @@ import clsx from 'clsx';
 // import { connect } from 'react-redux';
 import { connect } from 'react-redux';
 // import { reduxSelector, reduxActionCreator } from '../../../redux/exampleRedux.js';
-import { getAll } from '../../../redux/postsRedux';
+import { getAll, fetchPublished } from '../../../redux/postsRedux';
 
 import styles from './Homepage.module.scss';
 
-const Component = ({ className, postsAll }) => {
+class Component extends React.Component {
 
-  return (
-    <StatusContext.Consumer>
-      { value => (
-        <div className={clsx(className, styles.root)}>
-          <div className={styles.announcement}>
+  componentDidMount() {
+    const { fetchPublishedPosts } = this.props;
+    fetchPublishedPosts();
+  }
+
+  render() {
+    const {className, postsAll} = this.props;
+
+    return (
+      <StatusContext.Consumer>
+        { value => (
+          <div className={clsx(className, styles.root)}>
+            <div className={styles.announcement}>
+            </div>
+            <div className={styles.card}>
+              {postsAll.map(post => (
+                <Card key={post._id} className={styles.card__item}>
+                  <CardActionArea href={`/posts/${post._id}`}>
+                    {console.log(post)}
+                    <CardMedia
+                      className={styles.image}
+                      component="img"
+                      src={post.photo}
+                      title={post.title}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {post.title}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary" component="p">
+                        {post.content}
+                      </Typography>
+                      <div className={styles.price}>
+                        <Typography component="p" variant="subtitle2">Price: {post.price}</Typography>
+                        <Typography component="p" variant="subtitle2">Location: {post.location}</Typography>
+                      </div>
+                    </CardContent>
+                  </CardActionArea>
+                  <CardActions className={styles.card__btn}>
+                    <Button size="small" color="primary" href={`/post/${post.id}`}>
+                      Show more
+                    </Button>
+                  </CardActions>
+                </Card>
+              ))}
+            </div>
           </div>
-          <div className={styles.card}>
-            {postsAll.map(post => (
-              <Card key={post.id} className={styles.card__item}>
-                <CardActionArea href={`/post/${post.id}`}>
-                  <CardMedia
-                    className={styles.image}
-                    component="img"
-                    image={post.image}
-                    title={post.title}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {post.title}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                      {post.content}
-                    </Typography>
-                    <div className={styles.price}>
-                      <Typography component="p" variant="subtitle2">Price: {post.price}</Typography>
-                      <Typography component="p" variant="subtitle2">Location: {post.location}</Typography>
-                    </div>
-                  </CardContent>
-                </CardActionArea>
-                <CardActions className={styles.card__btn}>
-                  <Button size="small" color="primary" href={`/post/${post.id}`}>
-                    Show more
-                  </Button>
-                </CardActions>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-    </StatusContext.Consumer>
-  );
-};
+        )}
+      </StatusContext.Consumer>
+    );
+  }
+}
 
 Component.propTypes = {
   children: PropTypes.node,
@@ -85,17 +95,18 @@ Component.propTypes = {
   ),
   status: PropTypes.bool,
   state: PropTypes.bool,
+  fetchPublishedPosts: PropTypes.func,
 };
 
 const mapStateToProps = state => ({
   postsAll: getAll(state),
 });
 
-// const mapDispatchToProps = dispatch => ({
-//   someAction: arg => dispatch(reduxActionCreator(arg)),
-// });
+const mapDispatchToProps = dispatch => ({
+  fetchPublishedPosts: () => dispatch(fetchPublished()),
+});
 
-const Container = connect(mapStateToProps)(Component);
+const Container = connect(mapStateToProps, mapDispatchToProps)(Component);
 
 export {
   //Component as Homepage,

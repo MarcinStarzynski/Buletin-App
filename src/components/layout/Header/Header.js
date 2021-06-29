@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 
 import styles from './Header.module.scss';
 
-const Component = ({className, status}) => (
+const Component = ({status}) => (
   <div className={styles.root}>
     <Link to={'/'} className={styles.logo}>Bulletin Board</Link>
     <div className={styles.buttons}>
